@@ -1,4 +1,3 @@
-from dotenv import dotenv_values
 from rewards.forms import Themes, NewsLetter
 
 

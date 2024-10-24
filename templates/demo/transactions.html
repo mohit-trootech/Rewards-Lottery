@@ -1,0 +1,29 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}Transactions{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+<script src="{% static 'js/transactions.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="mt-3 border p-2 mx-3 rounded shadow">
+    <table id="myTable" class="display text-capitalize">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Profile</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+{% endblock %}

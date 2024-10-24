@@ -1,39 +1,50 @@
-{% extends 'base.html' %}
+{% extends 'index.html' %}
 {% load static %}
-{% block title %}Login{% endblock %}
+{% block title %}Login {% endblock %}
+{% block style %}{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/login.js' %}"></script>
+{% endblock %}
+
 {% block content %}
-<div class="my-7 border rounded-xl shadow-lg mx-14">
-    <div class="p-4 sm:p-7">
-        <div class="text-center">
-            <h1 class="block text-2xl font-bold">Sign in</h1>
-            <p class="mt-2 text-sm">
-                Don't have an account yet?
-                <a class="text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium"
-                    href="{% url 'signup' %}">
-                    Sign up here
-                </a>
-            </p>
+<div class="container d-flex justify-content-center align-items-center my-5">
+    <form class="w-50 mx-auto px-4 py-5 shadow card">
+        <!-- Email input -->
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="username" required id="form2Example1" name="username" class="form-control" />
+            <label class="form-label" for="form2Example1">Email address</label>
         </div>
 
-        <div class="mt-5">
-            <button type="button"
-                class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border shadow-lg hover:bg-gray-50 hover:text-black focus:outline-none focus:text-black focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none mb-5">
-                <i class="fab fa-google"></i>
-                Sign in with Google
-            </button>
-            <form action="" method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                <label class="form-control w-full mb-4">
-                    <div class="label">
-                        <span class="label-text">{{field.label}}</span>
-                    </div>
-                    {{field}}
-                </label>
-                {% endfor %}
-                <button class="btn w-full btn-secondary hover:text-white" type="submit">Login</button>
-            </form>
+        <!-- Password input -->
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="password" required id="form2Example2" name="password" class="form-control" />
+            <label class="form-label" for="form2Example2">Password</label>
         </div>
-    </div>
+
+        <!-- 2 column grid layout for inline styling -->
+        <div class="row mb-4">
+            <div class="col d-flex justify-content-center">
+                <!-- Checkbox -->
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
+                    <label class="form-check-label" for="form2Example31"> Remember me </label>
+                </div>
+            </div>
+
+            <div class="col">
+                <!-- Simple link -->
+                <a href="#!">Forgot password?</a>
+            </div>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary col-12 mb-4">Sign
+            in</button>
+
+        <!-- Register buttons -->
+        <div class="text-center">
+            <p>Not a member? <a href="{% url 'demo:signup' %}">Signup</a></p>
+        </div>
+    </form>
 </div>
 {% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}Rewards{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/lotteries.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+<form class="row align-items-center m-0 pt-3 justify-content-center" id="lottery-filter">
+    <div class="col-md-3">
+        <select class="form-select form-select-sm" placeholder="Sort by" name="sort">
+            <option value="?">Random</option>
+            <option value="-created">Newest First</option>
+            <option value="created">Oldest Firest</option>
+        </select>
+    </div>
+    <div class="col-md-3 text-truncate">
+        <input type="text" class="form-control form-control-sm" placeholder="Search Lottery by Title" name="q">
+    </div>
+    <div class="col-md-3">
+        <input type="text" class="form-control form-control-sm" placeholder="Sort by Price" name="price">
+    </div>
+    <button class="btn btn-sm btn-primary col-md-2" type="submit">Filter</button>
+</form>
+<section class="p-4" id="lotteries">
+    <div class="row justify-content-center align-items-center mb-3">
+        <div class="col-md-12">
+            <div class="card p-3" aria-hidden="true">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="h-100 w-100 position-relative">
+                            <span class="placeholder placeholder-glow w-100 h-100"></span>
+                        </div>
+                    </div>
+                    <div class="card-body col-md-6">
+                        <h5 class="card-title placeholder-glow">
+                            <span class="placeholder col-6"></span>
+                        </h5>
+                        <p class="card-text placeholder-glow">
+                            <span class="placeholder col-7"></span>
+                            <span class="placeholder col-4"></span>
+                            <span class="placeholder col-4"></span>
+                            <span class="placeholder col-6"></span>
+                            <span class="placeholder col-8"></span>
+                            <span class="placeholder col-6"></span>
+                        </p>
+                        <a class="btn btn-primary disabled placeholder col-6" aria-disabled="true"></a>
+                    </div>
+                    <div class="col-md-3 border-sm-start-none border-start">
+                        <div class="d-flex flex-row align-items-center mb-1 placeholder-glow">
+                            <h3>$</h3>
+                            <h3 class="text-info placeholder me-3 col-3"><s></s></h3>
+                            <h3 class="text-danger placeholder col-3"><s></s></h3>
+                        </div>
+                        <h1 class="text-success placeholder col-10"></h1>
+                        <div class="d-flex flex-column mt-4">
+                            <a class="btn btn-primary disabled placeholder col-12 mb-3" aria-disabled="true"></a>
+
+                            <a class="btn btn-secondary disabled placeholder col-12 mb-3" aria-disabled="true"></a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+{% include 'demo/pagination.html' %}
+{%endblock %}

@@ -1,0 +1,27 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}Winner{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+<script src="{% static 'js/winning.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="mt-3 border p-2 mx-3 rounded shadow">
+    <table id="myTable" class="display">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Lottery</th>
+                <th>Winning</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+{% endblock %}

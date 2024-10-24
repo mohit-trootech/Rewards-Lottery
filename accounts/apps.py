@@ -6,4 +6,5 @@ class AccountsConfig(AppConfig):
     name = "accounts"
 
     def ready(self) -> None:
-        import accounts.signals
+        import accounts.signals  # noqa: F401
+        import rewards.signals  # noqa: F401

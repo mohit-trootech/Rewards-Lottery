@@ -3,6 +3,7 @@ from os import path
 from dotenv import dotenv_values
 from utils.constants import Settings, EmailConfig
 import dj_database_url
+from datetime import timedelta
 
 config = dotenv_values(".env")
 AUTH_USER_MODEL = "accounts.User"
@@ -22,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "django_extensions",
+    "rest_framework_simplejwt",
     "dj_database_url",
     "debug_toolbar",
     "schema_graph",
@@ -29,6 +31,7 @@ INSTALLED_APPS = [
     "rewards",
     "phonenumber_field",
     "rest_framework_nested",
+    "celery",
 ]
 
 
@@ -158,7 +161,66 @@ DEBUG_TOOLBAR_PANELS = [
 # Rest Framework Configuration
 # https://www.django-rest-framework.org/
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 20,
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+        "utils.permissions.IsOwner",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
 }
+
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}
+
+# Celery Configuration
+# CELERY_BROKER_URL = "db+postgresql://mohit-trootech:postgres@localhost:5432/rewards"
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_TIMEZONE = "Asia/Kolkata"
+# CELERY_BROKER_URL = "redis://default:a98t14FfJCfAC05tTjB2bwvpsJSfq43n@redis-10158.c301.ap-south-1-1.ec2.redns.redis-cloud.com:10158"
+CELERY_RESULT_BACKEND = "redis"
+CELERY_RESULT_EXTENDED = True
+CELERY_BEAT_SCHEDULE = {
+    "draw_winners": {
+        "task": "rewards.tasks.draw_winners",
+        "schedule": 30.0,
+    },
+}
+
+
+# Logging Configuration
+
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "formatters": {
+#         "verbose": {
+#             "format": "{levelname} {asctime} {module} {message}",
+#         },
+#     },
+#     "handlers": {
+#         "file": {
+#             "level": "INFO",
+#             "class": "logging.FileHandler",
+#             "filename": "debug.log",
+#             "formatter": "verbose",
+#         },
+#         "console": {
+#             "level": "INFO",
+#             "class": "logging.StreamHandler",
+#             "formatter": "simple",
+#         },
+#     },
+#     "loggers": {
+#         "django": {
+#             "handlers": ["file", "console"],
+#             "level": "INFO",
+#             "propagate": True,
+#         },
+#     },
+# }

@@ -3,6 +3,221 @@ from enum import Enum
 from dotenv import dotenv_values
 
 
+# Templates For Mail
+class MailTemplates(Enum):
+    """Mailing Templates Htmls & Txts"""
+
+    REGISTRATION_TXT = "template/user_registration.txt"
+    REGISTRATION_HTML = "template/user_registration.html"
+
+
+# Celery Task Constants
+class CeleryTasks(Enum):
+    """Celery Taks Constants"""
+
+    TEXT_HTML = "text/html"
+    REGISTRATION_SUCCESS_MAIL = _("{username} Registered Successfully")
+    REGISTRATION_MAIL_SUCCESS = _("Registration Mail Sent Successfully")
+    LOTTERIES_DRAWN = _("Lotteries Drawn Successfully")
+    NO_LOTTERY_AVAILABLE = _("No Lotteries Found")
+    WINNING_MAIL = _("Winning Mail Sent Successfully")
+    WINNER_CONGRATULATIONS = _("Congratulations {username}!")
+
+
+# Model Constants
+# =====================================================
+class Models(Enum):
+    REGION_IN = "IN"
+    USER_SINGULAR = "User"
+    USER_PLURAL = "Users"
+    WALLET_SINGULAR = "Wallet"
+    WALLET_PLURAL = "Wallets"
+    TRANSACTION_SINGULAR = "Transaction"
+    TRANSACTION_PLURAL = "Transactions"
+    WALLET = "wallet"
+    TRANSACTIONS = "transactions"
+    LOTTERIES_CREATED = "created_lotteries"
+    LOTTERIES_BOUGHT = "bought_lotteries"
+    LOTTERIES_WON = "won_lotteries"
+    LOTTERY_SINGULAR = "Lottery"
+    LOTTERY_PLURAL = "Lotteries"
+    BUYER_SINGULAR = "Buyer"
+    BUYER_PLURAL = "Buyers"
+    WINNER_SINGULAR = "Winner"
+    WINNER_PLURAL = "Winners"
+    BUYERS = "buyers"
+    WINNERS = "winners"
+    LOTTERIES = "lotteries"
+    VENDOR = "vendor"
+    USER = "user"
+    AMOUNT = "amount"
+    EXPIRY_DATE = "expiry_date"
+    LOTTERY_CASH = "lottery_cash"
+    LOTTERY_CASH_SINGULAR = "Lottery Cash"
+    LOTTERY_CASH_PLURAL = "Lottery Cashs"
+    ORDER = "order"
+    ORDERS = "orders"
+    ORDER_SINGULAR = "Order"
+    ORDER_PLURAL = "Orders"
+
+
+# User Option Constants
+# =====================================================
+class UserOptions(Enum):
+    """User Option Constants"""
+
+    VENDER = "Vender"
+    CUSTOMER = "Customer"
+    USER_TYPES = (
+        (VENDER, VENDER),
+        (CUSTOMER, CUSTOMER),
+    )
+
+
+# Gender Constants
+# =====================================================
+class Genders(Enum):
+    """Gender Constants"""
+
+    MALE = "Male"
+    FEMALE = "Female"
+    GENDERS = (
+        (MALE, MALE),
+        (FEMALE, FEMALE),
+    )
+
+
+# Transaction Option Constants
+# =====================================================
+class TransactionOptions(Enum):
+    """Transaction Option Constants"""
+
+    CREDIT = "credit"
+    DEBIT = "debit"
+    TRANSACTIONS_TYPES = (
+        (CREDIT, CREDIT),
+        (DEBIT, DEBIT),
+    )
+
+
+# Lookup Fields & Kwargs Constants
+# =====================================================
+class LookupFields(Enum):
+    """Lookup Fields & Kwargs"""
+
+    USER_USERNAME = "user__username"
+    USERNAME = "username"
+    SLUG = "slug"
+    PK = "pk"
+
+
+# Transaction Description Constants
+# =====================================================
+class TransactionDescription(Enum):
+    """Transaction Desscriptions"""
+
+    LOTTERY_PURCHASE = "Lottery Purchased"
+    WALLET_TOPUP = "Wallet Topup"
+    LOTTERY_WON = "Lottery Won"
+    LOTTERY_COMMISSION = "Lottery Drawn Commission"
+
+
+# Rewards Serilizer Constants
+# =====================================================
+class RewardsSerilizerConstants(Enum):
+    """Rewards Serializers Constants"""
+
+    LOTTERIES_DETAIL = "lotteries-detail"
+    LOTTERIES_LIST = "lotteries-list"
+    BUYERS_DETAIL = "buyers-detail"
+    WINNERS_DETAIL = "winners-detail"
+    PK = "pk"
+    NOT_VENDOR = "Only Vendor is Authorized to Create Lotteries"
+
+
+# Accounts Serilizer Constants
+# =====================================================
+class AccountsSerilizerConstants(Enum):
+    """Accounts Serializers Constants"""
+
+    AGE_NOT_VALID = "Must be 18+ to register & play!"
+
+
+# Accounts Views Constants
+# =====================================================
+class AccountsViews(Enum):
+    """Accounts Views Constants"""
+
+    LOGOUT_SUCCESS = _("Logout Successfully")
+    FORCE_LOGOUT_SUCCESS = _("All Sessions Cleared Successfully")
+    LOGIN_SUCCESS = _("Login Successfully")
+    REGISTRATION_SUCCESS = _("User Registered Successfully")
+    USER_NOT_AUTHENTICATED = _("User is not authenticated")
+    INVALID_CREDENTIALS = _("Invalid credentials")
+
+
+# Urls Constants
+# =====================================================
+class Urls(Enum):
+    API_ROOT = "api"
+    UPDATE_API_REVERSE = "update-api"
+    LOGGED_IN_USER = "logged-in-user"
+    SCHEMA_REVERSE = "schema"
+    TOKEN_REFRESH = "token-refresh"
+    API_ROOT = "api"
+    LOGIN = "login"
+    LOGOUT_REVERSE = "logout"
+    SIGNUP = "signup"
+    PROFILE = "profile"
+    DEMO = "demo-home"
+    DETAIL_LOTTERY = "detail-lottery"
+    PURCHASE_LOTTERY = "purchase-lottery"
+    CREATE_LOTTERY = "create-lottery"
+    TRANSACTIONS = "transactions"
+    WINNING = "winning"
+    FORGOT_PASSWORD = "forgot-password"
+    RESET_PASSWORD = "reset-password"
+
+
+# API Key Constants
+# =====================================================
+class ApiKey(Enum):
+    API_KEY = "api_key"
+    API_KEY_GENERATE = "generate_api_key"
+    API_KEY_UPDATE = "update_api_key"
+    API_KEY_DELETE = "delete_api_key"
+
+
+# Error Messages
+# =====================================================
+class Errors(Enum):
+    INVALID_JSON = _("Invalid JSON data")
+    LOGIN_ERROR = _("Failed to Login Try Again with Correct Credentials")
+    PASSWORD_NOT_MATCH = _("Please Check Passwords are Not Matching")
+    UNIQUE_USER_ERROR = _("User with Same Username or Password Already Exists")
+    TERMS_NOT_ACCEPTED = _("Please Accept Terms and Conditions")
+    API_KEY_NOT_FOUND = _("API Key Not Found")
+    API_KEY_ALREADY_EXISTS = _("API Key Already Exists")
+    API_KEY_INVALID = _("Invalid API Key")
+    API_KEY_UNAUTHORIZED = _(
+        "Unauthorized API Key, Please Check API Key or Try Generate a New One."
+    )
+
+
+# Success Messages
+# =====================================================
+class Success(Enum):
+    REGISTERED = _("User Added Successfully")
+    USER_404 = _("User Does Not Exists")
+    USER_UPDATED = _("User updated successfully")
+    LOGGED_IN = _("Logged in Successfully")
+    SIGNED_UP = _("User Registered Successfully")
+    LOGGED_OUT = _("User Logged Out Successfully")
+    PROFILE_UPDATED = _("Profile Updated Successfully")
+    NEWSLETTER_SUCCESS = _("Newsletter Subscribed Successfully")
+    API_KEY_UPDATED = _("API Key Updated Successfully")
+
+
 # Choices Constants
 # =====================================================
 class Choices(Enum):
@@ -76,31 +291,6 @@ class AdminAction(Enum):
     USER_ACTIVE_SUCCESS_MESSAGE = _("%d users were successfully been active.")
 
 
-# Error Messages
-# =====================================================
-class Errors(Enum):
-    INVALID_JSON = _("Invalid JSON data")
-    LOGIN_ERROR = _("Failed to Login Try Again with Correct Credentials")
-    PASSWORD_NOT_MATCH = _("Please Check Passwords are Not Matching")
-    UNIQUE_USER_ERROR = _("User with Same Username or Password Already Exists")
-    TERMS_NOT_ACCEPTED = _("Please Accept Terms and Conditions")
-
-
-# Success Messages
-# =====================================================
-class Success(Enum):
-    REGISTERED = _("User Added Successfully")
-    USER_404 = _("User Does Not Exists")
-    USER_UPDATED = _("User updated successfully")
-    LOGGED_IN = _("Logged in Successfully")
-    SIGNED_UP = _("User Registered Successfully")
-    LOGGED_OUT = _("User Logged Out Successfully")
-    FORCE_LOGGED_OUT = _("User Logged Out Successfully from all Sessions")
-    PROFILE_UPDATED = _("Profile Updated Successfully")
-    NEWSLETTER_SUCCESS = _("Newsletter Subscribed Successfully")
-    API_KEY_UPDATED = _("API Key Updated Successfully")
-
-
 # Templates Name
 # =====================================================
 class Templates(Enum):
@@ -111,38 +301,22 @@ class Templates(Enum):
     SIGNUP = "accounts/signup.html"
 
 
-# Urls Path & Reverse
+# App Names
 # =====================================================
-class Urls(Enum):
-    HOME = "index"
-    ABOUT = "about"
-    SCHEMA_REVERSE = "schema"
-    API_ROOT = "api"
-    LOGIN_REVERSE = "login"
-    LOGIN = "/accounts/login/"
-    LOGOUT_REVERSE = "logout"
-    FORCE_LOGOUT_REVERSE = "force-logout"
-    REGISTER_REVERSE = "signup"
-    PROFILE_REVERSE = "profile"
-    PROFILE_SUCCESS_URL = "/accounts/profile/{pk}/"
-    UPDATE_API_REVERSE = "update-api"
+class AppNames(Enum):
+    REWARDS = "rewards"
 
 
-# Context Variable Names
+# Routers Basename
 # =====================================================
-class ContextNames(Enum):
-    pass
-
-
-# Forms Constants Dictionary
-# =====================================================
-FORM_LABELS = {
-    "first_name": "Enter First Name",
-    "last_name": "Enter Last Name",
-    "username": "Enter Username",
-    "email": "Enter Email",
-    "password": "Enter Password",
-}
+class BaseNames(Enum):
+    USERS = "users"
+    WALLET = "wallet"
+    TRANSACTION = "transaction"
+    LOTTERIES = "lotteries"
+    BUYERS = "buyers"
+    WINNERS = "winners"
+    ORDERS = "orders"
 
 
 # Email Configurations

@@ -1,10 +1,3 @@
-/*Toast Messages Autohide */
-$(document).ready(() => {
-  const toastElem = document.getElementById("toast-messages");
-  if (toastElem) {
-    /**Automatically Hide Toast */
-    setTimeout(() => {
-      $("#toast-messages").fadeOut();
-    }, 5000);
-  }
-});
+/**Lotteries list demo */
+const lotteriesListUrl = "/api/lotteries/" + window.location.search;
+const homeContent = document.getElementById("home");

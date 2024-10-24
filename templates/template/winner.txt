@@ -1,0 +1,19 @@
+Hi {{ username }},
+
+We're thrilled to welcome you to the Rewards community!
+
+Get ready to unlock a world of exciting features and exclusive benefits designed to enhance your experience.
+
+Here's a sneak peek at what awaits you:
+
+Earn rewards: Discover a variety of ways to earn points and redeem them for amazing rewards.
+Exclusive offers: Enjoy access to special deals and discounts from your favorite brands.
+Personalized recommendations: We'll help you find the best rewards and offers tailored to your interests.
+Seamless tracking: Easily monitor your points, rewards, and progress within your personalized dashboard.
+Disclaimer: This is Sample Template You didn't win any Amount LOL. Click here to visit [Github](https://github.com/mohit-trootech)
+
+We're here to support you every step of the way. If you have any questions, feel free to reach out to our friendly support team at Support.
+
+Happy rewarding!
+
+The Rewards Team

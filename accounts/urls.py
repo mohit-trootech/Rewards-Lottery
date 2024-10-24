@@ -1,19 +1,15 @@
 from django.urls import path
-from accounts.views import (
-    login_view,
-    logout_view,
-    registration_view,
-    profile_view,
-    force_logout_view,
-    update_api_view,
-)
 from utils.constants import Urls
+from accounts.api import (
+    LoginApiView,
+    UserRegistrationApiView,
+    LogoutApiView,
+)
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
-    path("login/", login_view, name=Urls.LOGIN_REVERSE.value),
-    path("logout/", logout_view, name=Urls.LOGOUT_REVERSE.value),
-    path("force_logout/", force_logout_view, name=Urls.FORCE_LOGOUT_REVERSE.value),
-    path("signup/", registration_view, name=Urls.REGISTER_REVERSE.value),
-    path("profile/<int:pk>/", profile_view, name=Urls.PROFILE_REVERSE.value),
-    path("update_api", update_api_view, name=Urls.UPDATE_API_REVERSE.value),
+    path("token/refresh/", TokenRefreshView.as_view(), name=Urls.TOKEN_REFRESH.value),
+    path("login/", LoginApiView.as_view(), name=Urls.LOGIN.value),
+    path("logout/", LogoutApiView.as_view(), name=Urls.LOGOUT_REVERSE.value),
+    path("signup/", UserRegistrationApiView.as_view(), name=Urls.SIGNUP.value),
 ]

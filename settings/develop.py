@@ -1,4 +1,4 @@
-from settings.base import *
+from settings.base import *  # noqa: F401, F403
 
 DEBUG = True
 ALLOWED_HOSTS = []
