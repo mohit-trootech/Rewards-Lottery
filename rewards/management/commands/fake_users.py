@@ -19,7 +19,6 @@ def create_user(username):
         )
         user.set_password("password")
         user.save()
-        print(user)
 
 
 class Command(BaseCommand):

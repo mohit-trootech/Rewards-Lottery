@@ -16,17 +16,21 @@ Lottery = get_model("rewards", "Lottery")
 fake = Faker()
 
 
-def create_lottery(vendor):
+def create_lottery(title):
     with transaction.atomic():
         response = requests.get("https://picsum.photos/512/512")
         response.raise_for_status()
-
+        vendors = User.objects.filter(option="Vender")
+        if vendors.count() == 0:
+            raise Exception(
+                "No Vender Found, Please Create Vender First Using 'python manage.py fake_users'"
+            )
         image_file = ImageFile(BytesIO(response.content), name=f"{fake.slug()}.jpg")
 
         lottery = Lottery(
-            title=fake.sentence(),
+            title=title,
             description=fake.text(),
-            vendor=vendor,
+            vendor=random.choice(vendors),
             price=fake.pydecimal(left_digits=2, right_digits=2, positive=True),
             total_draw=fake.random_int(1, 10),
             winning=fake.pydecimal(left_digits=3, right_digits=2, positive=True),
@@ -46,10 +50,15 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             start = time()
-            vendors = User.objects.filter(option="Vender")
+            titles = set()
             for _ in range(options["count"]):
-                with Pool(processes=8) as pool:
-                    pool.map(create_lottery, vendors)
+                title = fake.sentence()
+                while title in titles:
+                    title = fake.user_name()
+                titles.add(title)
+            with Pool(processes=8) as pool:
+                pool.map(create_lottery, titles)
+
             end = time()
             self.stdout.write(
                 self.style.SUCCESS(
