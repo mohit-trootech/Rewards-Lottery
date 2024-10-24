@@ -8,7 +8,6 @@ from rewards.serializers import (
 )
 from django.db.models import Q
 from django_extensions.db.models import ActivatorModel
-from django.utils.timezone import now
 from utils.viewsets import SoftDestroyModelViewset
 from utils.base_utils import get_model
 from utils.pagination import StandardPagination
@@ -34,17 +33,19 @@ class LotterViewset(SoftDestroyModelViewset):
         return super().get_serializer_class()
 
     def get_queryset(self):
-        query = Q()
-        if "vendor" in self.request.query_params:
-            query = query & Q(
-                vendor__username__icontains=self.request.query_params.get("vendor")
+        query = Q(title__icontains=self.request.query_params.get("q", "")) & Q(
+            status=ActivatorModel.ACTIVE_STATUS
+        )
+
+        return (
+            super()
+            .get_queryset()
+            .filter(query)
+            .order_by(
+                self.request.query_params.get("sort", "?"),
+                self.request.query_params.get("price", "?"),
             )
-        if "title" in self.request.query_params:
-            query = query & Q(title__icontains=self.request.query_params.get("title"))
-        if "latest" in self.request.query_params:
-            query = query & Q(expiry_date__gt=now())
-        query = query & Q(status=ActivatorModel.ACTIVE_STATUS)
-        return super().get_queryset().filter(query)
+        )
 
 
 class WinnerViewset(SoftDestroyModelViewset):

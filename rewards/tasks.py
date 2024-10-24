@@ -7,7 +7,9 @@ from django.db import transaction
 from utils.utils import get_lotteries
 from utils.base_utils import get_model
 from utils.constants import Choices, TransactionDescription, CeleryTasks
+import logging
 
+logger = logging.getLogger(__name__)
 Transaction = get_model("accounts", "Transaction")
 Winner = get_model("rewards", "Winner")
 LotteryCash = get_model("rewards", "LotteryCash")
@@ -30,7 +32,9 @@ def user_lottery_winning_mail(email, username):
     )
     msg.attach_alternative(html_template, "text/html")
     msg.send()
-    return CeleryTasks.WINNING_MAIL.value
+    logger.info(CeleryTasks.WINNING_MAIL.value.format(username=username))
+
+    return CeleryTasks.WINNING_MAIL.value.format(username=username)
 
 
 @shared_task
@@ -81,7 +85,6 @@ def draw_winners():
 
         _process_vendor_earnings(lottery, lottery_cash)
         Transaction.objects.bulk_create(transactions)
-
     return CeleryTasks.LOTTERIES_DRAWN.value
 
 

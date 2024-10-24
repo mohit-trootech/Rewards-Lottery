@@ -1,0 +1,23 @@
+<form class="row g-3 p-3 m-0" id="lottery-filter">
+    <div class=" col-lg-3 col-md-3 col-sm-6">
+        <input type="text" class="form-control form-control-sm colcol-lg-3 col-md-3 col-sm-6"
+            placeholder="Search Lottery by Title" name="q">
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6">
+        <select class="form-select form-select-sm" placeholder="Sort by" name="sort">
+            <option value="?">Random</option>
+            <option value="-created">Newest First</option>
+            <option value="created">Oldest Firest</option>
+        </select>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6">
+        <select class="form-select form-select-sm" placeholder="Sort by" name="price">
+            <option value="?">Random</option>
+            <option value="price">Lowest First</option>
+            <option value="-price">Highest First</option>
+        </select>
+    </div>
+    <div class=" col-lg-3 col-md-3 col-sm-6">
+        <button class="btn btn-sm btn-primary col-12" type="submit">Filter</button>
+    </div>
+</form>

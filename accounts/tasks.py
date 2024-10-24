@@ -1,5 +1,8 @@
 from celery import shared_task
 from utils.constants import CeleryTasks, MailTemplates
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @shared_task
@@ -25,4 +28,5 @@ def user_registration_success_mail(email, username):
     )
     msg.attach_alternative(html_template, CeleryTasks.TEXT_HTML.value)
     msg.send()
+    logger.info(subject)
     return CeleryTasks.REGISTRATION_MAIL_SUCCESS.value

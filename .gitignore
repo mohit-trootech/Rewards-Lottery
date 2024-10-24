@@ -7,3 +7,4 @@ media/*
 celerybeat-*
 .response.json
 */migrations/*
+debug.log

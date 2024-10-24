@@ -20,7 +20,7 @@ class CeleryTasks(Enum):
     REGISTRATION_MAIL_SUCCESS = _("Registration Mail Sent Successfully")
     LOTTERIES_DRAWN = _("Lotteries Drawn Successfully")
     NO_LOTTERY_AVAILABLE = _("No Lotteries Found")
-    WINNING_MAIL = _("Winning Mail Sent Successfully")
+    WINNING_MAIL = _("Winning Mail Sent Successfully to {username}")
     WINNER_CONGRATULATIONS = _("Congratulations {username}!")
 
 
@@ -164,7 +164,6 @@ class Urls(Enum):
     LOGGED_IN_USER = "logged-in-user"
     SCHEMA_REVERSE = "schema"
     TOKEN_REFRESH = "token-refresh"
-    API_ROOT = "api"
     LOGIN = "login"
     LOGOUT_REVERSE = "logout"
     SIGNUP = "signup"

@@ -188,39 +188,44 @@ CELERY_RESULT_EXTENDED = True
 CELERY_BEAT_SCHEDULE = {
     "draw_winners": {
         "task": "rewards.tasks.draw_winners",
-        "schedule": 30.0,
+        "schedule": 300.0,
     },
 }
 
 
 # Logging Configuration
 
-# LOGGING = {
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "formatters": {
-#         "verbose": {
-#             "format": "{levelname} {asctime} {module} {message}",
-#         },
-#     },
-#     "handlers": {
-#         "file": {
-#             "level": "INFO",
-#             "class": "logging.FileHandler",
-#             "filename": "debug.log",
-#             "formatter": "verbose",
-#         },
-#         "console": {
-#             "level": "INFO",
-#             "class": "logging.StreamHandler",
-#             "formatter": "simple",
-#         },
-#     },
-#     "loggers": {
-#         "django": {
-#             "handlers": ["file", "console"],
-#             "level": "INFO",
-#             "propagate": True,
-#         },
-#     },
-# }
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",  # Use curly braces for string formatting
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "debug.log",
+            "formatter": "verbose",
+        },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "rewards": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}

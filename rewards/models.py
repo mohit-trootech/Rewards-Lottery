@@ -52,11 +52,6 @@ class LotteryCash(SoftDeleteActivatorModelAbstractModel, ActivatorModel):
     )
     objects = LotteryCashManager()
 
-    @amount.setter
-    def amount(self, value):
-        self.amount = value
-        self.save(update_fields=["amount"])
-
     class Meta:
         verbose_name = Models.LOTTERY_CASH_SINGULAR.value
         verbose_name_plural = Models.LOTTERY_CASH_PLURAL.value

@@ -61,9 +61,7 @@ function loadLotteries(content) {
                                ${lottery.description}
                             </p>
                             <div>
-                            <div role="button" href="${
-                              lottery.vendor.url
-                            }" class="border vendor-detail rounded p-2 toast-header">
+                            <a role="button" href="${`/demo/profile/${lottery.vendor.username}/`}" class="border text-decoration-none rounded p-2 toast-header">
                                 <img src="${
                                   lottery.vendor.image
                                     ? lottery.vendor.image
@@ -73,15 +71,24 @@ function loadLotteries(content) {
                                   lottery.vendor.username
                                 }</strong>
                                 <small>11 mins ago</small>
-                            </div>
+                            </a>
                         </div>
                         </div>
                         <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
                             <div class="d-flex flex-row align-items-center mb-1">
-                                <h4 class="mb-1 me-1">$${lottery.price}</h4>
+                                <h4 class="mb-1 overflow-hidden me-1">$${
+                                  lottery.price
+                                }</h4>
                             </div>
-                            <marquee class="text-warning" direction="left">Lottery Lottery Lottery</marquee>
-                            <marquee class="text-success" direction="right">Lottery Lottery Lottery</marquee>
+                            <marquee class="text-primary" direction="right">${"Lottery ".repeat(
+                              10
+                            )}</marquee>
+                            <marquee class="text-danger" direction="left">${"Lottery ".repeat(
+                              10
+                            )}</marquee>
+                            <marquee class="text-success" direction="right">${"Lottery ".repeat(
+                              10
+                            )}</marquee>
                             <div class="d-flex flex-column mt-4">
                                 <a class="btn btn-primary lottery-detail btn-sm mb-3"
                                     type="button" href="/demo/lottery/${

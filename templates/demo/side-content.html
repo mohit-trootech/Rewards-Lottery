@@ -1,0 +1,70 @@
+{%load static%}
+<div class="offcanvas-header bg-dark d-flex justify-content-between align-items-center">
+    <div>
+        <a href="{% url 'demo:demo-home' %}" class="mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            <img src="{% static 'img/rewards.png' %}" height="32" width="32" alt="">
+            <span class="fs-4">Rewards</span>
+        </a>
+    </div>
+    <button type="button" class="btn btn-light rounded-circle d-block d-md-none" data-bs-dismiss="offcanvas"
+        aria-label="Close">
+        <i class="fa fa-close text-dark p-0 m-0"></i>
+    </button>
+</div>
+<hr>
+<div class="offcanvas-body d-flex flex-column" style="scrollbar-width: none;">
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li>
+            <a href="{% url 'demo:demo-home' %}"
+                class="nav-link mb-3 {% if request.path == '/demo/' %}active{%else%}text-dark bg-body-secondary{%endif%}">
+                <i class="fa-solid fa-ticket me-2"></i>
+                Lotteries
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'demo:create-lottery' %}"
+                class="nav-link mb-3 {% if request.path == '/demo/create/' %}active{%else%}text-dark bg-body-secondary{%endif%}">
+                <i class="fa fa-plus-circle me-2"></i>
+                Create a New Lottery
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'demo:transactions' %}"
+                class="nav-link mb-3 {% if request.path == '/demo/transactions/' %}active{%else%}text-dark bg-body-secondary{%endif%}">
+                <i class="fa fa-list me-2"></i>
+                Transactions
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'demo:winning' %}"
+                class="nav-link mb-3 {% if request.path == '/demo/winning/' %}active{%else%}text-dark bg-body-secondary{%endif%}">
+                <i class="fa fa-award me-2"></i>
+                Winning
+            </a>
+        </li>
+    </ul>
+    <div class="d-block d-md-none">
+        <hr>
+        {% include 'demo/filter.html' %}
+    </div>
+    <hr>
+    <div class="dropdown dropup bg-dark rounded px-1 py-2">
+        <button role="dialog"
+            class="btn btn-link d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="{% static 'img/profile.jpg' %}" id="dropdown-profile-img" alt="" width="32" height="32"
+                class="rounded-circle me-2">
+            <strong id="dropdown-profile-name" class="text-capitalize">Options</strong>
+        </button>
+        <ul class="dropdown-menu text-small shadow" id="sidebar-dropdown">
+            <li><a class="dropdown-item {% if 'demo/profile' in request.path %}active{%endif %}" href=""
+                    id="dropdown-profile-link">Profile</a></li>
+            <li><a class="dropdown-item {% if request.path == '/demo/' %}active{%endif %}"
+                    href="{% url 'demo:demo-home' %}">Lotteries</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" role="button" id="logoutBtn">Sign out</a></li>
+        </ul>
+    </div>
+</div>
