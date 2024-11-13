@@ -4,16 +4,20 @@ from accounts.serializers import UserListSerializer, TransactionSerializer
 from utils.constants import (
     LookupFields,
     RewardsSerilizerConstants,
-    Choices,
     TransactionDescription,
+)
+from rewards.constants import (
+    ValidationErrors,
+    SerializerConstants,
+    LookUps,
+    TransactionDescriptions,
 )
 from utils.base_utils import get_model
 from utils.utils import (
-    get_models_instance_else_serializer_validation_error,
-    check_whether_user_can_buy_lottery_else_validation_error,
     check_wallet_minumun_balance_criteria,
     check_user_options,
 )
+from accounts.constants import Choices
 
 User = get_model("accounts", "User")
 Transaction = get_model("accounts", "Transaction")
@@ -24,10 +28,12 @@ Order = get_model("rewards", "Order")
 
 
 class LotteryListSerializer(DynamicModelSerializer):
-    vendor = UserListSerializer(read_only=True)
+    vendor = UserListSerializer(
+        read_only=True, default=serializers.CurrentUserDefault()
+    )
     url = serializers.HyperlinkedIdentityField(
-        view_name=RewardsSerilizerConstants.LOTTERIES_DETAIL.value,
-        lookup_field=LookupFields.SLUG.value,
+        view_name=SerializerConstants.LOTTERIES_DETAIL,
+        lookup_field=LookUps.SLUG,
     )
     buyer_count = serializers.SerializerMethodField(read_only=True)
 
@@ -76,46 +82,38 @@ class LotteryDetailSerializer(LotteryListSerializer):
             "lottery_cash",
         )
 
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        attrs["vendor"] = self.context["request"].user
-        return attrs
 
-    def update(self, instance, validated_data):
-        instance = super().update(instance, validated_data)
-        query_params = self.context["request"].query_params
-        if "buyer" in query_params:
-            serializer = BuyerSerializer(
-                data={
-                    "user": query_params["buyer"],
-                    "lottery": instance,
-                    "amount": instance.price,
-                    "quantity": (
-                        query_params.get("quantity")
-                        if query_params.get("quantity")
-                        else 1
-                    ),
-                }
-            )
-            serializer.is_valid(raise_exception=True)
-            buyer = serializer.save()
-            transaction_serializer = TransactionSerializer(
-                data={
-                    "user": query_params["buyer"],
-                    "amount": buyer.amount,
-                    "option": Choices.DEBIT.value,
-                    "description": TransactionDescription.LOTTERY_PURCHASE.value,
-                }
-            )
-            transaction_serializer.is_valid(raise_exception=True)
-            transaction_serializer.save()
-            buyer.user.wallet.balance -= buyer.amount
-            buyer.user.wallet.save(update_fields=["balance"])
-        return instance
+class LotteryPurchaseSerializer(serializers.Serializer):
+    """Serializer to validate Lottery Purchase"""
+
+    user = serializers.CurrentUserDefault()
+    quantity = serializers.IntegerField(default=1)
+    lottery = LotteryListSerializer(read_only=True)
+
+    def create(self, validated_data):
+        buyer = BuyerSerializer(
+            data=validated_data,
+            context={"request": self.context["request"]},
+        )
+        buyer.is_valid(raise_exception=True)
+        buyer.save()
+        transaction = TransactionSerializer(
+            data={
+                "user": validated_data["user"].id,
+                "amount": buyer.validated_data["amount"],
+                "option": Choices.DEBIT,
+                "description": TransactionDescriptions.LOTTERY_PURCHASE,
+            }
+        )
+        transaction.is_valid(raise_exception=True)
+        transaction.save()
+        buyer.user.wallet.balance -= buyer.validated_data["amount"]
+        buyer.user.wallet.save(update_fields=["balance"])
+        return super().create(validated_data)
 
 
 class BuyerWinnerBaseSerializer(DynamicModelSerializer):
-    user = UserListSerializer(read_only=True)
+    user = UserListSerializer(read_only=True, default=serializers.CurrentUserDefault())
     lottery = LotteryListSerializer(read_only=True)
 
 
@@ -140,27 +138,17 @@ class BuyerSerializer(BuyerWinnerBaseSerializer):
         ]
         depth = True
 
-    def validate_user(self, value):
-        """Validate User"""
-        breakpoint()
+    def validate_amount(self, value):
+        """Check amount available to purchase lottery"""
+        if value > self.initial_data["lottery"]["price"]:
+            raise serializers.ValidationError(ValidationErrors.NOT_ENOUGH_AMOUNT)
         return value
 
-    def validate(self, attrs):
-        """validate whether the user is customer & wallet balance is sufficient or not"""
-        try:
-            user = get_models_instance_else_serializer_validation_error(
-                self.initial_data["user"], User
-            )
-            check_whether_user_can_buy_lottery_else_validation_error(
-                user, attrs["amount"]
-            )
-            check_wallet_minumun_balance_criteria(user)
-            check_user_options(user)
-            attrs["user"] = user
-            attrs["lottery"] = self.initial_data["lottery"]
-        except KeyError as ke:
-            raise serializers.ValidationError(str(ke))
-        return super().validate(attrs)
+    def validate_user(self, value):
+        """Check, user wallet minimum balance & whether user is customer"""
+        check_wallet_minumun_balance_criteria(value)
+        check_user_options(value)
+        return value
 
 
 class WinnerSerializer(BuyerWinnerBaseSerializer):

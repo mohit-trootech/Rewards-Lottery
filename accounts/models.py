@@ -1,10 +1,9 @@
 from django.contrib.auth.models import AbstractUser
-from utils.constants import Choices
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django_extensions.db.models import TimeStampedModel
-from utils.constants import Models
 from utils.models import SoftDeleteActivatorModelAbstractModel
+from accounts.constants import ModelVerbose, Choices
 
 
 def _upload_to(self, filename):
@@ -14,22 +13,43 @@ def _upload_to(self, filename):
 
 
 class User(AbstractUser):
-    image = models.ImageField(upload_to=_upload_to, null=True, blank=True)
+    email = models.EmailField(verbose_name=ModelVerbose.EMAIL, unique=True)
+    image = models.ImageField(
+        verbose_name=ModelVerbose.PROFILE_IMAGE,
+        upload_to=_upload_to,
+        null=True,
+        blank=True,
+    )
     option = models.CharField(
+        verbose_name=ModelVerbose.PROFILE_OPTIONS,
         max_length=16,
-        choices=Choices.USER_TYPES.value,
-        default=Choices.CUSTOMER.value,
+        choices=Choices.USER_TYPES,
+        default=Choices.CUSTOMER,
     )
-    age = models.IntegerField(null=True, blank=True)
-    phone = PhoneNumberField(region=Models.REGION_IN.value, null=True, blank=True)
+    age = models.IntegerField(verbose_name=ModelVerbose.AGE, null=True, blank=True)
+    phone = PhoneNumberField(
+        verbose_name=ModelVerbose.PHONE,
+        region=ModelVerbose.REGION_IN,
+        null=True,
+        blank=True,
+    )
     gender = models.CharField(
-        max_length=16, choices=Choices.GENDERS.value, null=True, blank=True
+        verbose_name=ModelVerbose.GENDER,
+        max_length=16,
+        choices=Choices.GENDERS,
+        null=True,
+        blank=True,
     )
-    address = models.CharField(max_length=255, null=True, blank=True)
+    address = models.CharField(
+        verbose_name=ModelVerbose.ADDRESS, max_length=255, null=True, blank=True
+    )
+    google_id = models.CharField(
+        verbose_name=ModelVerbose.GOOGLE_ID, max_length=255, null=True, blank=True
+    )
 
     class Meta:
-        verbose_name = Models.USER_SINGULAR.value
-        verbose_name_plural = Models.USER_PLURAL.value
+        verbose_name = ModelVerbose.USER
+        verbose_name_plural = ModelVerbose.USERS
 
     def __str__(self):
         return self.username
@@ -37,31 +57,45 @@ class User(AbstractUser):
 
 class Wallet(SoftDeleteActivatorModelAbstractModel, TimeStampedModel):
     user = models.OneToOneField(
-        "accounts.User", on_delete=models.CASCADE, related_name=Models.WALLET.value
+        "accounts.User",
+        on_delete=models.CASCADE,
+        related_name=ModelVerbose.WALLET_O2O_USER,
     )
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    balance = models.DecimalField(
+        verbose_name=ModelVerbose.BALANCE, max_digits=10, decimal_places=2, default=0
+    )
 
     class Meta:
-        verbose_name = Models.WALLET_SINGULAR.value
-        verbose_name_plural = Models.WALLET_PLURAL.value
+        verbose_name = ModelVerbose.WALLET
+        verbose_name_plural = ModelVerbose.WALLETS
 
     def __str__(self):
-        return f"{self.user.username}'s Wallet: {self.balance}"
+        return ModelVerbose.WALLET_STR.format(username=self.user.username)
 
 
 class Transaction(SoftDeleteActivatorModelAbstractModel, TimeStampedModel):
     user = models.ForeignKey(
         "accounts.User",
         on_delete=models.CASCADE,
-        related_name=Models.TRANSACTIONS.value,
+        related_name=ModelVerbose.TRANSACTION_FK_USER,
     )
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    option = models.CharField(max_length=8, choices=Choices.TRANSACTIONS_TYPES.value)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    amount = models.DecimalField(
+        verbose_name=ModelVerbose.AMOUNT, max_digits=10, decimal_places=2
+    )
+    option = models.CharField(
+        verbose_name=ModelVerbose.OPTION,
+        max_length=8,
+        choices=Choices.TRANSACTIONS_TYPES,
+    )
+    description = models.CharField(
+        verbose_name=ModelVerbose.DESCRIPTION, max_length=255, null=True, blank=True
+    )
 
     class Meta:
-        verbose_name = Models.TRANSACTION_SINGULAR.value
-        verbose_name_plural = Models.TRANSACTION_PLURAL.value
+        verbose_name = ModelVerbose.TRANSACTION
+        verbose_name_plural = ModelVerbose.TRANSACTIONS
 
     def __str__(self):
-        return f"{self.amount} {self.option} {self.description}"
+        return ModelVerbose.TRANSACTION_STR.format(
+            username=self.user.username, option=self.option
+        )

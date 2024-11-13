@@ -13,10 +13,52 @@ from utils.constants import AccountsViews, LookupFields
 from utils.base_utils import get_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import CreateAPIView, GenericAPIView
+from accounts.constants import AuthResponse, AuthExceptions
+from utils.auth_service import AuthService
 
 User = get_model("accounts", "User")
 Wallet = get_model("accounts", "Wallet")
 Transaction = get_model("accounts", "Transaction")
+
+
+class UserRegisterationApi(CreateAPIView, GenericAPIView):
+    """User Registration API View"""
+
+    permission_classes = [permissions.AllowAny]
+    serializer_class = UserSignupSerializer
+
+    def create(self, request, *args, **kwargs):
+        instance = super().create(request, *args, **kwargs)
+        return Response(
+            {"message": AuthResponse.USER_REGISTERED, "data": instance.data},
+            status=status.HTTP_201_CREATED,
+        )
+
+
+user_registeration = UserRegisterationApi.as_view()
+
+
+class UserLoginApi(GenericAPIView):
+    """Handle Post Requests to Login User"""
+
+    permission_classes = [permissions.AllowAny]
+    serializer_class = UserLoginSerializer
+    auth_service = AuthService()
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = authenticate(**serializer.validated_data)
+        if not user:
+            raise exceptions.ValidationError(AuthExceptions.INVALID_CREDENTIALS)
+        return Response(
+            self.auth_service.get_auth_tokens_for_user(user=user),
+            status=status.HTTP_200_OK,
+        )
+
+
+user_login = UserLoginApi.as_view()
 
 
 class LoggedInUser(views.APIView):
@@ -47,61 +89,6 @@ class LogoutApiView(views.APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             raise Response(data={"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserRegistrationApiView(views.APIView):
-    """User Registration API View"""
-
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        serializer = UserSignupSerializer(data=request.data)
-        if serializer.is_valid():
-            password = serializer.validated_data["password"]
-            try:
-                user = serializer.create(serializer.validated_data)
-                user.set_password(password)
-                user.save()
-                return Response(
-                    data={"message": AccountsViews.REGISTRATION_SUCCESS.value},
-                    status=status.HTTP_201_CREATED,
-                )
-            except Exception as e:
-                raise Response(
-                    data={"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-        raise Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class LoginApiView(views.APIView):
-    """Handle Post Requests to Login User"""
-
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            username = serializer.validated_data["username"]
-            password = serializer.validated_data["password"]
-            user = authenticate(request, username=username, password=password)
-
-            if user:
-                refresh = RefreshToken.for_user(user)
-
-                return Response(
-                    {
-                        "refresh": str(refresh),
-                        "access": str(refresh.access_token),
-                    },
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                raise Response(
-                    {"message": AccountsViews.INVALID_CREDENTIALS.value},
-                    status=status.HTTP_401_UNAUTHORIZED,
-                )
-
-        raise Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewset(viewsets.ModelViewSet):

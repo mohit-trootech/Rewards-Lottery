@@ -2,7 +2,7 @@ from django.utils.timezone import now
 from django.db.models import Q
 from django_extensions.db.models import ActivatorModel
 from rest_framework.serializers import ValidationError
-from utils.constants import Choices
+from accounts.constants import Choices
 from utils.base_utils import get_model
 
 Lottery = get_model("rewards", "Lottery")

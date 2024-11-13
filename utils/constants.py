@@ -166,6 +166,7 @@ class Urls(Enum):
     TOKEN_REFRESH = "token-refresh"
     LOGIN = "login"
     LOGOUT_REVERSE = "logout"
+    REGISTER = "register"
     SIGNUP = "signup"
     PROFILE = "profile"
     DEMO = "demo-home"
@@ -215,29 +216,6 @@ class Success(Enum):
     PROFILE_UPDATED = _("Profile Updated Successfully")
     NEWSLETTER_SUCCESS = _("Newsletter Subscribed Successfully")
     API_KEY_UPDATED = _("API Key Updated Successfully")
-
-
-# Choices Constants
-# =====================================================
-class Choices(Enum):
-    VENDER = _("Vender")
-    CUSTOMER = _("Customer")
-    MALE = _("Male")
-    FEMALE = _("Female")
-    USER_TYPES = (
-        (VENDER, VENDER),
-        (CUSTOMER, CUSTOMER),
-    )
-    GENDERS = (
-        (MALE, MALE),
-        (FEMALE, FEMALE),
-    )
-    CREDIT = _("credit")
-    DEBIT = _("debit")
-    TRANSACTIONS_TYPES = (
-        (CREDIT, CREDIT),
-        (DEBIT, DEBIT),
-    )
 
 
 # JsonResponses Constants
