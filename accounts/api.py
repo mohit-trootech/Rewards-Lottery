@@ -9,11 +9,16 @@ from accounts.serializers import (
 )
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
-from utils.constants import AccountsViews, LookupFields
+from utils.constants import LookupFields
 from utils.base_utils import get_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    GenericAPIView,
+    UpdateAPIView,
+    RetrieveAPIView,
+)
 from accounts.constants import AuthResponse, AuthExceptions
 from utils.auth_service import AuthService
 
@@ -61,23 +66,6 @@ class UserLoginApi(GenericAPIView):
 user_login = UserLoginApi.as_view()
 
 
-class LoggedInUser(views.APIView):
-    """Logged in User Serializer"""
-
-    def get(self, request, *args, **kwargs):
-        """returns authenticated user details"""
-        if request.user.is_authenticated:
-            serializer = UserListSerializer(request.user, context={"request": request})
-            return Response(serializer.data)
-        raise Response(
-            data={"message": AccountsViews.USER_NOT_AUTHENTICATED.value},
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
-
-
-logged_in_user = LoggedInUser.as_view()
-
-
 class LogoutApiView(views.APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -89,6 +77,24 @@ class LogoutApiView(views.APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             raise Response(data={"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserProfileApiView(UpdateAPIView, RetrieveAPIView, GeneratorExit):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserDetailSerializer
+    lookup_field = LookupFields.USERNAME.value
+
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+
+user_profile = UserProfileApiView.as_view()
 
 
 class UserViewset(viewsets.ModelViewSet):

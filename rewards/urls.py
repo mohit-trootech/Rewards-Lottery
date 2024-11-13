@@ -17,7 +17,6 @@ from rewards.views import (
     BuyerViewset,
     OrderViewset,
 )
-from accounts.api import logged_in_user
 
 app_name = AppNames.REWARDS.value
 
@@ -36,7 +35,6 @@ router.register("orders", OrderViewset, basename=BaseNames.ORDERS.value)
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
-    path("api/logged_in_user/", logged_in_user, name=Urls.LOGGED_IN_USER.value),
     path("api/", include(router.urls), name=Urls.API_ROOT.value),
     path("schema/", Schema.as_view(), name=Urls.SCHEMA_REVERSE.value),
     path("demo/", include("demo.urls")),
