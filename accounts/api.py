@@ -6,6 +6,9 @@ from accounts.serializers import (
     WalletSerializer,
     UserLoginSerializer,
     UserSignupSerializer,
+    ChangePasswordSerializer,
+    ChangeEmailSerializer,
+    EmailVerifySerializer,
 )
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
@@ -79,22 +82,91 @@ class LogoutApiView(views.APIView):
             raise Response(data={"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserProfileApiView(UpdateAPIView, RetrieveAPIView, GeneratorExit):
+class UserProfileApiView(UpdateAPIView, RetrieveAPIView):
+    """User Profile API View - Reterive, Update"""
+
     permission_classes = (IsAuthenticated,)
     serializer_class = UserDetailSerializer
     lookup_field = LookupFields.USERNAME.value
 
-    def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+    def get_object(self):
+        return self.request.user
+
+
+user_profile = UserProfileApiView.as_view()
+
+
+class ChangePasswordApiView(UpdateAPIView, GenericAPIView):
+    """Change Password API View - Update"""
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ChangePasswordSerializer
+    lookup_field = LookupFields.USERNAME.value
 
     def get_object(self):
         return self.request.user
 
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(
+            instance, data=request.data, context={"request": request}, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-user_profile = UserProfileApiView.as_view()
+user_password_change = ChangePasswordApiView.as_view()
+
+
+class ChangeEmailApiView(UpdateAPIView, GenericAPIView):
+    """Change Email API View - Update"""
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ChangeEmailSerializer
+
+    def get_object(self):
+        return self.request.user
+
+
+user_email_change = ChangeEmailApiView.as_view()
+
+
+class EmailVerifyApiView(UpdateAPIView, CreateAPIView, GenericAPIView):
+    """Email Verify API View - Update"""
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = EmailVerifySerializer
+
+    def create(self, *args, **kwargs):
+        """Send Email Verification OTP"""
+        # generate_otp.delay(self.request.user.id)
+        try:
+            return Response(
+                {"message": AuthResponse.OTP_GENERATED}, status=status.HTTP_200_OK
+            )
+        except Exception as err:
+            raise Response(
+                {
+                    "message": AuthExceptions.FAILED_TO_GENERATE_OTP.format(err=err),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    def patch(self, request, *args, **kwargs):
+        """Verify User Email"""
+        serializer = self.serializer_class(
+            instance=request.user, data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"message": AuthResponse.EMAIL_VERIFIED},
+            status=status.HTTP_200_OK,
+        )
+
+
+email_verify = EmailVerifyApiView.as_view()
 
 
 class UserViewset(viewsets.ModelViewSet):

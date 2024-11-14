@@ -4,12 +4,42 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django_extensions.db.models import TimeStampedModel
 from utils.models import SoftDeleteActivatorModelAbstractModel
 from accounts.constants import ModelVerbose, Choices
+from django.utils.timezone import now, timedelta
 
 
 def _upload_to(self, filename):
     return "users/{username}/{filename}".format(
         username=self.username, filename=filename
     )
+
+
+def _random_otp():
+    import random
+
+    return random.randint(100000, 999999)
+
+
+class Otp(models.Model):
+    otp = models.IntegerField(unique=True, default=_random_otp)
+    expiry = models.DateTimeField()
+    user = models.OneToOneField(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        related_name=ModelVerbose.OTP_O2O_USER,
+    )
+
+    class Meta:
+        verbose_name = ModelVerbose.OTP
+        verbose_name_plural = ModelVerbose.OTPS
+        ordering = ["user__username"]
+
+    def save(self, *args, **kwargs):
+        self.expiry = now() + timedelta(minutes=5)
+
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return ModelVerbose.OTP_STR.format(username=self.user.username)
 
 
 class User(AbstractUser):
@@ -45,6 +75,11 @@ class User(AbstractUser):
     )
     google_id = models.CharField(
         verbose_name=ModelVerbose.GOOGLE_ID, max_length=255, null=True, blank=True
+    )
+    is_verified = models.BooleanField(
+        default=Choices.INACTIVE_STATUS,
+        choices=Choices.STATUS_CHOICES,
+        verbose_name=ModelVerbose.ACCOUNT_VERIFIED,
     )
 
     class Meta:

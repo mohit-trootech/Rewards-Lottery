@@ -4,6 +4,12 @@ from utils.base_utils import get_model
 User = get_model("accounts", "User")
 Wallet = get_model("accounts", "Wallet")
 Transaction = get_model("accounts", "Transaction")
+Otp = get_model("accounts", "Otp")
+
+
+@admin.register(Otp)
+class OtpAdmin(admin.ModelAdmin):
+    list_display = ("user", "otp")
 
 
 @admin.register(User)
@@ -18,37 +24,56 @@ class UserAdmin(admin.ModelAdmin):
         "phone",
         "gender",
         "address",
+        "is_verified",
     )
-    readonly_fields = ("id", "last_login", "date_joined")
-    list_filter = ("is_staff", "is_superuser", "is_active", "groups")
-    search_fields = ("username", "first_name", "last_name", "email")
+    readonly_fields = ("last_login", "date_joined")
+    fieldsets = (
+        (None, {"fields": ("username", "password")}),
+        (
+            "Personal info",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "image",
+                    "option",
+                    "age",
+                    "phone",
+                    "gender",
+                    "address",
+                )
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_verified",
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
+    )
+    list_filter = (
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "option",
+        "gender",
+        "is_verified",
+    )
+    search_fields = ("username", "email", "first_name", "last_name")
+    readonly_fields = ("last_login", "date_joined")
     ordering = ("username",)
     filter_horizontal = (
         "groups",
         "user_permissions",
-    )
-    fieldsets = (
-        (
-            None,
-            {
-                "fields": ["id"],
-            },
-        ),
-        (
-            "Personal Details",
-            {
-                "fields": ("username", "email", "password", "first_name", "last_name"),
-            },
-        ),
-        (
-            "User Details",
-            {
-                "fields": ("option", "age", "phone", "gender", "address"),
-            },
-        ),
-        ("Important Dates", {"fields": ("last_login", "date_joined")}),
-        ("Groups", {"fields": ("groups", "user_permissions")}),
-        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
     )
 
 

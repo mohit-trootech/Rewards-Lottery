@@ -8,11 +8,14 @@ from django.contrib.auth.password_validation import (
 from utils.base_utils import get_model
 from email_validator import validate_email as validate_email_validator
 from email_validator import EmailNotValidError
-from accounts.constants import ValidationErrors
+from accounts.constants import ValidationErrors, Choices
+from django.utils.timezone import now
+from django.core.exceptions import ObjectDoesNotExist
 
 User = get_model("accounts", "User")
 Wallet = get_model("accounts", "Wallet")
 Transaction = get_model("accounts", "Transaction")
+Otp = get_model("accounts", "Otp")
 
 
 class UserSignupSerializer(serializers.ModelSerializer):
@@ -111,6 +114,9 @@ class UserDetailSerializer(UserListSerializer):
             "address",
             "phone",
             "wallet",
+            "is_verified",
+            "date_joined",
+            "last_login",
         ]
         depth = True
 
@@ -118,6 +124,86 @@ class UserDetailSerializer(UserListSerializer):
         if value < 18:
             raise serializers.ValidationError(ValidationErrors.INVALID_AGE)
         return value
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(
+        write_only=True, validators=[password_strength]
+    )
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        user = self.context["request"].user
+        if not user.check_password(attrs["old_password"]):
+            raise serializers.ValidationError(
+                {"old_password": ValidationErrors.INVALID_PASSWORD}
+            )
+        if attrs["new_password"] == attrs["old_password"]:
+            raise serializers.ValidationError(
+                {"new_password": ValidationErrors.SAME_PASSWORD}
+            )
+        if attrs["new_password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError(
+                {"confirm_password": ValidationErrors.UNMATCHED_PASSWORDS}
+            )
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data.get("new_password"))
+        instance.save()
+        return instance
+
+
+class ChangeEmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "email",
+        ]
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        instance.is_verified = False
+        instance.save(update_fields=["is_verified"])
+        return instance
+
+
+class EmailVerifySerializer(serializers.ModelSerializer):
+    """Email Verification Serializer"""
+
+    class Meta:
+        model = Otp
+        fields = ["otp"]
+
+    def validate_otp(self, value):
+        """Validate OTP"""
+        # Check it OTP Expired
+
+        user = self.context["request"].user
+        try:
+            if user.otp.otp != value:
+                """Check if OTP is Validated"""
+                raise serializers.ValidationError(
+                    {"otp": [ValidationErrors.INVALID_OTP]}
+                )
+            if user.otp.expiry < now():
+                """If Expiry Date if Smaller Than Current Datetime Means OTP is Expired Hence Raise OTP Expiry Validation Error"""
+                raise serializers.ValidationError(
+                    {"otp": [ValidationErrors.OTP_EXPIRED]}
+                )
+            return value
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError(ValidationErrors.OTP_NOT_FOUND)
+
+    def update(self, instance, validated_data):
+        """Update User Email"""
+        instance.otp.delete()
+        instance.is_verified = Choices.ACTIVE_STATUS
+        instance.save(update_fields=["is_verified"])
+        return instance
 
 
 class TransactionSerializer(DynamicModelSerializer):

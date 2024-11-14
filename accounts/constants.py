@@ -12,10 +12,21 @@ class ValidationErrors:
 
     INVALID_AGE = _("Age must be 18+")
     UNMATCHED_PASSWORDS = _("Passwords do not match")
+    INVALID_PASSWORD = _("Invalid Password")
+    SAME_PASSWORD = _("New Password cannot be same as Old Password")
+    INVALID_OTP = _("Invalid OTP")
+    OTP_EXPIRED = _("OTP Expired")
+    OTP_NOT_FOUND = _("OTP Not Found")
 
 
 class ModelVerbose:
     """Model Verbose Names"""
+
+    # Otp Model
+    OTP = _("OTP")
+    OTPS = _("OTPS")
+    OTP_O2O_USER = _("otp")
+    OTP_STR = "OTP for {username}"
 
     # User Model
     USER = _("User")
@@ -29,6 +40,7 @@ class ModelVerbose:
     GENDER = _("Gender")
     ADDRESS = _("Address")
     GOOGLE_ID = _("Google ID")
+    ACCOUNT_VERIFIED = _("Account Verified")
 
     # Wallet Model
     WALLET = _("Wallet")
@@ -57,6 +69,13 @@ class Choices:
         (VENDER, _("Vender")),
         (CUSTOMER, _("Customer")),
     )
+    INACTIVE_STATUS = 0
+    ACTIVE_STATUS = 1
+    STATUS_CHOICES = (
+        (INACTIVE_STATUS, "Unverified"),
+        (ACTIVE_STATUS, "Verified"),
+    )
+
     # Gender Options
     MALE = "male"
     FEMALE = "female"
@@ -77,9 +96,12 @@ class AuthResponse:
     """Auth Api Response Messages"""
 
     USER_REGISTERED = _("User Registered Successfully")
+    OTP_GENERATED = _("OTP Generated Successfully")
+    EMAIL_VERIFIED = _("Email Verified Successfully")
 
 
 class AuthExceptions:
     """Auth Api Exceptions Messages"""
 
     INVALID_CREDENTIALS = _("Invalid Credentials")
+    FAILED_TO_GENERATE_OTP = _("Failed to Generate OTP {err}")
